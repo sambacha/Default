@@ -1,0 +1,14 @@
+!*.sol
+!*.js
+!*.ts
+*.json
+*.min.js
+*.debug.*
+dist/
+out/
+cache/
+artifacts/
+build/
+tmp/
+vendor/
+lib/**

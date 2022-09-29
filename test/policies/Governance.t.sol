@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import {Test} from "forge-std/Test.sol";
-import {UserFactory} from "test-utils/UserFactory.sol";
+import { Test } from "forge-std/Test.sol";
+import { UserFactory } from "test-utils/UserFactory.sol";
 import "../lib/ModuleTestFixtureGenerator.sol";
 
 import "../../src/Kernel.sol";
 import "../../src/modules/INSTR.sol";
 import "../../src/modules/VOTES.sol";
 import "../../src/policies/Governance.sol";
-
 
 contract GovernanceTest is Test, IGovernance, IDefaultInstructions {
     using ModuleTestFixtureGenerator for DefaultVotes;
@@ -99,7 +98,6 @@ contract GovernanceTest is Test, IGovernance, IDefaultInstructions {
     //    SUBMITTING PROPOSALS    //
     ////////////////////////////////
 
-
     function _submitProposal() internal {
         // create valid instructions
         Instruction[] memory instructions_ = new Instruction[](1);
@@ -109,7 +107,6 @@ contract GovernanceTest is Test, IGovernance, IDefaultInstructions {
         vm.prank(voter1);
         governance.submitProposal(instructions_, "proposalName", "This is the proposal URI");
     }
-
 
     function testRevert_NotEnoughVotesToPropose() public {
         Instruction[] memory instructions_ = new Instruction[](1);
@@ -151,11 +148,9 @@ contract GovernanceTest is Test, IGovernance, IDefaultInstructions {
         assertEq(pls.proposalURI, "This is the proposal URI");
     }
 
-
     // ////////////////////////////////
     // //     ENDORSING PROPOSALS    //
     // ////////////////////////////////
-
 
     function testRevert_CannotEndorseNullProposal() public {
         vm.expectRevert(CannotEndorseNullProposal.selector);
@@ -213,11 +208,9 @@ contract GovernanceTest is Test, IGovernance, IDefaultInstructions {
         assertEq(governance.totalEndorsementsForProposal(1), 8);
     }
 
-
     // ////////////////////////////////
     // //    ACTIVATING PROPOSALS    //
     // ////////////////////////////////
-
 
     function _createEndorsedProposal() public {
         _submitProposal();

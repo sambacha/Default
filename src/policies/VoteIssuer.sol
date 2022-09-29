@@ -6,19 +6,18 @@ import "../Kernel.sol";
 import { DefaultVotes } from "../modules/VOTES.sol";
 
 contract VoteIssuer is Policy {
-    
     DefaultVotes public VOTES;
 
     constructor(Kernel kernel_) Policy(kernel_) {}
 
-    function configureDependencies() 
-        external 
-        override 
+    function configureDependencies()
+        external
+        override
         onlyKernel
-        returns (Keycode[] memory dependencies) 
+        returns (Keycode[] memory dependencies)
     {
         dependencies = new Keycode[](1);
-        
+
         dependencies[0] = toKeycode("VOTES");
         VOTES = DefaultVotes(getModuleAddress(toKeycode("VOTES")));
     }
@@ -37,7 +36,6 @@ contract VoteIssuer is Policy {
 
     //////
 
-
     function mint(address wallet_, uint256 amt_) external onlyRole("voteissuer") {
         VOTES.mintTo(wallet_, amt_);
     }
@@ -45,5 +43,4 @@ contract VoteIssuer is Policy {
     function burn(address wallet_, uint256 amt_) external onlyRole("voteissuer") {
         VOTES.burnFrom(wallet_, amt_);
     }
-
 }

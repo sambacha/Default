@@ -13,7 +13,6 @@ import { DefaultVotes } from "src/modules/VOTES.sol";
 import { DefaultTreasury } from "src/modules/TRSRY.sol";
 import { IBond, Bond } from "src/policies/Bond.sol";
 
-
 contract BondTest is Test, IBond {
     Kernel internal kernel;
 
@@ -38,9 +37,9 @@ contract BondTest is Test, IBond {
         user3 = users[2];
 
         DAI = new MockERC20("DAI", "DAI", 18);
-        DAI.mint(user1, 1_000_000*1e18);
-        DAI.mint(user2, 1_000_000*1e18);
-        DAI.mint(user3, 1_000_000*1e18);
+        DAI.mint(user1, 1_000_000 * 1e18);
+        DAI.mint(user2, 1_000_000 * 1e18);
+        DAI.mint(user3, 1_000_000 * 1e18);
 
         // deploy default kernel
         kernel = new Kernel();
@@ -78,17 +77,14 @@ contract BondTest is Test, IBond {
         uint256 startingBalance = DAI.balanceOf(address(user1));
 
         // purchase bond
-        DAI.approve(address(TRSRY), totalCost*1e12);
+        DAI.approve(address(TRSRY), totalCost * 1e12);
         bond.purchase(amtToPurchase, totalCost);
 
         // assert dai has been transfered
-        assertEq(DAI.balanceOf(address(user1)), startingBalance - totalCost*1e12);
+        assertEq(DAI.balanceOf(address(user1)), startingBalance - totalCost * 1e12);
 
         // assert that votes have been received
-        assertEq(
-            VOTES.balanceOf(address(user1)),
-            amtToPurchase*10**VOTES.decimals()
-        );
+        assertEq(VOTES.balanceOf(address(user1)), amtToPurchase * 10**VOTES.decimals());
 
         vm.stopPrank();
     }
@@ -97,15 +93,12 @@ contract BondTest is Test, IBond {
         vm.startPrank(user2);
 
         uint256 amtToPurchase1 = 128_500;
-        (
-            uint256 totalCost,
-            uint256 newBasePrice
-        ) = bond.getTotalCost(amtToPurchase1);
-        
+        (uint256 totalCost, uint256 newBasePrice) = bond.getTotalCost(amtToPurchase1);
+
         // purchase 128500 tokens
         // so if slippage is 15 then
         // ( $1 + (.000015 * 128500) ) => totalCost should equal 2927500
-        DAI.approve(address(TRSRY), totalCost*1e12);
+        DAI.approve(address(TRSRY), totalCost * 1e12);
         bond.purchase(amtToPurchase1, totalCost);
 
         // current base price is now $2.92
@@ -125,18 +118,13 @@ contract BondTest is Test, IBond {
     }
 
     function testCorrectness_getCurrentInventory() public {
-
         // ensure starting inventory is set to hardcoded value of 400_000
         assertEq(bond.getCurrentInventory(), 400_000);
 
         vm.warp(block.timestamp + 5 days);
 
         // assert that inventory is inflated at expected rate
-        assertEq(
-            bond.getCurrentInventory(),
-            400_000 + (bond.EMISSION_RATE() * 5)
-        );
-
+        assertEq(bond.getCurrentInventory(), 400_000 + (bond.EMISSION_RATE() * 5));
     }
 
     function testCorrectness_getTotalCost() public {
@@ -149,12 +137,12 @@ contract BondTest is Test, IBond {
 
         // newBasePrice should be 1m + (basePrice * slippage)
         assertEq(newBasePrice, bond.basePrice() + (amt * bond.SLIPPAGE_RATE()));
-        
+
         // total cost should be amtPurchased * ((basePrice + newBasePrice) / 2)
-        assertEq(totalCost, amt * ((bond.basePrice() + newBasePrice) / 2) );
+        assertEq(totalCost, amt * ((bond.basePrice() + newBasePrice) / 2));
 
         // purchase 100k bonds
-        DAI.approve(address(TRSRY), totalCost*1e12);
+        DAI.approve(address(TRSRY), totalCost * 1e12);
         bond.purchase(amt, totalCost);
 
         // basePrice() return value should equal newBasePrice from
@@ -168,7 +156,7 @@ contract BondTest is Test, IBond {
         assertEq(newBasePrice, bond.basePrice() + (amt * bond.SLIPPAGE_RATE()));
 
         // verify updated totalCost value is as expected
-        assertEq(totalCost, amt * ((bond.basePrice() + newBasePrice) / 2) );
+        assertEq(totalCost, amt * ((bond.basePrice() + newBasePrice) / 2));
 
         vm.stopPrank();
     }
@@ -178,9 +166,9 @@ contract BondTest is Test, IBond {
 
         uint256 amt = 100_000;
         (uint256 totalCost, uint256 newBasePrice) = bond.getTotalCost(amt);
-        
+
         // simulate large purchase
-        DAI.approve(address(TRSRY), totalCost*1e12);
+        DAI.approve(address(TRSRY), totalCost * 1e12);
         bond.purchase(amt, totalCost);
 
         // let price decay to the reserve price
@@ -188,10 +176,7 @@ contract BondTest is Test, IBond {
 
         // newBasePrice should be equal to reserve price + slippage
         (, newBasePrice) = bond.getTotalCost(1);
-        assertEq(
-            newBasePrice,
-            bond.RESERVE_PRICE() + bond.SLIPPAGE_RATE()
-        );
+        assertEq(newBasePrice, bond.RESERVE_PRICE() + bond.SLIPPAGE_RATE());
 
         vm.stopPrank();
     }
@@ -207,52 +192,46 @@ contract BondTest is Test, IBond {
         (uint256 totalCost1, ) = bond.getTotalCost(amtToPurchase1);
 
         // bond purchase order #1
-        DAI.approve(address(TRSRY), totalCost1*1e12);
+        DAI.approve(address(TRSRY), totalCost1 * 1e12);
         bond.purchase(amtToPurchase1, totalCost1);
 
         // assert dai has been transfered
-        assertEq(DAI.balanceOf(address(user1)), startingBalance - totalCost1*1e12);
+        assertEq(DAI.balanceOf(address(user1)), startingBalance - totalCost1 * 1e12);
 
         // assert that votes have been received
-        assertEq(
-            VOTES.balanceOf(address(user1)),
-            amtToPurchase1 * 10**decimals
-        );
+        assertEq(VOTES.balanceOf(address(user1)), amtToPurchase1 * 10**decimals);
 
         vm.warp(block.timestamp + 1 days);
 
         uint256 amtToPurchase2 = 100_000;
-        (uint256 totalCost2,) = bond.getTotalCost(amtToPurchase2);
+        (uint256 totalCost2, ) = bond.getTotalCost(amtToPurchase2);
 
         // bond purchase order #2
-        DAI.approve(address(TRSRY), totalCost2*1e12);
+        DAI.approve(address(TRSRY), totalCost2 * 1e12);
         bond.purchase(amtToPurchase2, totalCost2);
 
         // assert dai has been transfered
         assertEq(
             DAI.balanceOf(address(user1)),
-            startingBalance - totalCost1*1e12 - totalCost2*1e12
+            startingBalance - totalCost1 * 1e12 - totalCost2 * 1e12
         );
 
         // assert that votes have been received
-        assertEq(
-            VOTES.balanceOf(address(user1)),
-            (amtToPurchase1 + amtToPurchase2) * 10**decimals
-        );
+        assertEq(VOTES.balanceOf(address(user1)), (amtToPurchase1 + amtToPurchase2) * 10**decimals);
 
         vm.warp(block.timestamp + 2 days);
 
         uint256 amtToPurchase3 = 150_000;
-        (uint256 totalCost3,) = bond.getTotalCost(amtToPurchase3);
+        (uint256 totalCost3, ) = bond.getTotalCost(amtToPurchase3);
 
         // bond purchase order #3
-        DAI.approve(address(TRSRY), totalCost3*1e12);
+        DAI.approve(address(TRSRY), totalCost3 * 1e12);
         bond.purchase(amtToPurchase3, totalCost3);
 
         // assert dai has been transfered
         assertEq(
             DAI.balanceOf(address(user1)),
-            startingBalance - totalCost1*1e12 - totalCost2*1e12 - totalCost3*1e12
+            startingBalance - totalCost1 * 1e12 - totalCost2 * 1e12 - totalCost3 * 1e12
         );
 
         // assert that votes have been received
@@ -262,30 +241,28 @@ contract BondTest is Test, IBond {
         );
 
         vm.stopPrank();
-
     }
 
     function testRevert_Purchase_ExecutionPriceTooHigh() public {
         vm.startPrank(user1);
-        
+
         DAI.approve(address(TRSRY), 1);
 
         vm.expectRevert(IBond.ExecutionPriceTooHigh.selector);
         bond.purchase(1, 1);
-        
+
         vm.stopPrank();
     }
 
     function testRevert_Purchase_NotEnoughInventory() public {
         vm.startPrank(user1);
-        
+
         uint256 totalDai = DAI.balanceOf(address(user1));
         DAI.approve(address(TRSRY), totalDai);
 
         vm.expectRevert(IBond.NotEnoughInventory.selector);
         bond.purchase(400_001, totalDai);
-        
+
         vm.stopPrank();
     }
-
 }

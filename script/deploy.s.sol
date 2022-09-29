@@ -9,7 +9,6 @@ import "../src/modules/TRSRY.sol";
 import "../src/policies/Governance.sol";
 import "../src/policies/Bond.sol";
 
-
 contract Deploy is Script {
     Kernel kernel;
     DefaultInstructions INSTR;
@@ -31,7 +30,7 @@ contract Deploy is Script {
         INSTR = new DefaultInstructions(kernel);
         VOTES = new DefaultVotes(kernel);
         TRSRY = new DefaultTreasury(kernel, approvedTokens);
-        
+
         governance = new Governance(kernel);
         bond = new Bond(kernel, DAI);
 
