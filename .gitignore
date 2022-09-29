@@ -1,6 +1,14 @@
-out/
+# -*- mode: gitignore; -*-
+/out
 cache/
+artifacts/
+logs
+*.log
+!/broadcast
+/broadcast/*
+/broadcast/*/31337/
+
 node_modules/
 .env
 shell/broadcast/
-broadcast
+.DS_Store
