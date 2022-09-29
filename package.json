@@ -1,33 +1,45 @@
 {
-  "name": "Default",
-  "author": "0xPR0XY",
-  "version": "1.0.0",
-  "description": "A forge template",
-  "homepage": "https://github.com/FrankieIsLost/forge-template#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/FrankieIsLost/forge-template.git"
+  "name": "libdefault",
+  "version": "0.0.0",
+  "description": "Default Kernel Framework for Solidity",
+  "files": [
+    "/src/**/*.sol",
+    "/dist/**/*.json",
+    "!/src/mocks/**/*",
+    "!/src/test/**/*",
+    "/lib/**/*.sol",
+    "/dist/V01/*.sol"
+  ],
+  "directories": {
+    "lib": "lib",
+    "test": "test"
   },
   "scripts": {
-    "prettier": "prettier --write 'src/**/*.sol'",
-    "prettierTest": "prettier --write 'test/**/*.sol'",
-    "prettier:list": "prettier --list-different 'src/**/*.sol'",
-    "prettier:check": "prettier --check 'src/**/*.sol'",
-    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
-    "solhint:check": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "lint": "npm run prettier && npm run solhint",
-    "lint:check": "npm run prettier:check && npm run solhint:check"
-    
+    "typechain": "npx typechain --discriminate-types --target ethers-v5 \"out/**/*.json\"",
+    "compile": "forge build",
+    "fmt": "npx prettier --config prettier.config.js --write '**/*.sol'"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fullyallocated/Default.git"
+  },
+  "keywords": [],
+  "author": "Fully Allocated",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/fullyallocated/Default/issues"
+  },
+  "homepage": "https://github.com/fullyallocated/Default#readme",
   "devDependencies": {
-    "prettier": "^2.5.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.19",
-    "solhint": "^3.3.6"
-  },
-  "prettier": {
-    "tabWidth": 4,
-    "singleQuote": false,
-    "bracketSpacing": true,
-    "printWidth": 100
+    "@swc-node/core": "^1.9.1",
+    "@swc-node/register": "^1.5.2",
+    "@typechain/ethers-v5": "^10.1.0",
+    "@types/node": "^16.11.62",
+    "ethers": "^5.7.1",
+    "prettier": "^2.7.1",
+    "prettier-config-solidity": "^1.8.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.24",
+    "typechain": "^8.1.0",
+    "typescript": "^4.7.4"
   }
 }

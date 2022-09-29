@@ -9,31 +9,29 @@ import { DefaultTreasury } from "../modules/TRSRY.sol";
 import { Kernel, Policy, Permissions, Keycode } from "../Kernel.sol";
 import { toKeycode } from "../utils/KernelUtils.sol";
 
-
-
 interface IRedemption {
-
     // redeeming
     event TokensRedeemed(address redeemer, uint256 amt);
 }
 
-
 contract Redemption is Policy, IRedemption {
-
-
     /////////////////////////////////////////////////////////////////////////////////
     //                         Kernel Policy Configuration                         //
     /////////////////////////////////////////////////////////////////////////////////
-
 
     DefaultVotes public VOTES;
     DefaultTreasury public TRSRY;
 
     constructor(Kernel kernel_) Policy(kernel_) {}
 
-    function configureDependencies() external override onlyKernel returns (Keycode[] memory dependencies) {
+    function configureDependencies()
+        external
+        override
+        onlyKernel
+        returns (Keycode[] memory dependencies)
+    {
         dependencies = new Keycode[](2);
-        
+
         dependencies[0] = toKeycode("VOTES");
         VOTES = DefaultVotes(getModuleAddress(toKeycode("VOTES")));
 
@@ -41,12 +39,17 @@ contract Redemption is Policy, IRedemption {
         TRSRY = DefaultTreasury(getModuleAddress(toKeycode("TRSRY")));
     }
 
-    function requestPermissions() external view override onlyKernel returns (Permissions[] memory requests) {
+    function requestPermissions()
+        external
+        view
+        override
+        onlyKernel
+        returns (Permissions[] memory requests)
+    {
         requests = new Permissions[](2);
         requests[0] = Permissions(toKeycode("VOTES"), VOTES.burnFrom.selector);
         requests[1] = Permissions(toKeycode("TRSRY"), TRSRY.withdraw.selector);
     }
-
 
     /////////////////////////////////////////////////////////////////////////////////
     //                                Policy Variables                             //
@@ -55,14 +58,14 @@ contract Redemption is Policy, IRedemption {
     /// @param amount_ the amount of VOTES to redeem for TRSRY assets
     function redeem(uint256 amount_) external {
         ERC20[] memory reserveAssets = TRSRY.getReserveAssets();
-        
+
         // burn the votes that are being redeemd
         uint256 totalVotes = VOTES.totalSupply();
         VOTES.burnFrom(msg.sender, amount_);
 
         // return the pro-rata share of each reserve asset in the treasury
         uint256 numReserveAssets = reserveAssets.length;
-        for (uint i; i < numReserveAssets;) {
+        for (uint256 i; i < numReserveAssets; ) {
             ERC20 asset = reserveAssets[i];
 
             uint256 trsryAssetBalance = asset.balanceOf(address(TRSRY));
@@ -72,9 +75,11 @@ contract Redemption is Policy, IRedemption {
 
             TRSRY.withdraw(asset, amtToRedeem);
 
-            asset.transfer(msg.sender, amtToRedeem); 
+            asset.transfer(msg.sender, amtToRedeem);
 
-            unchecked {++i;}
+            unchecked {
+                ++i;
+            }
         }
 
         emit TokensRedeemed(msg.sender, amount_);
